@@ -94,14 +94,52 @@ exports.updateTodo = async function(req , res , next){
 
 exports.deleteTodo = async function(req , res , next){
 
-    console.log("hello from deleting todo ");
-    return res.send("hello from delete todo");
+    //expected to have in the params id 
+
+    const {id}= req.params;
+
+    if(!id){
+        return res.status(400).json({ message: 'BAD REQUEST' });
+    }
+
+    try {
+        const todo = await Todo.find({_id : id});
+        if(!todo) return res.status(404).json({ message: 'Not found' });
+        //if found 
+        const removeOne = await Todo.deleteOne({_id : id});
+        // if removed 
+        res.status(201).json({
+            success : true,
+            deletionStatus : removeOne,
+            dataDeleted : todo
+        })
+    } catch (error) {
+        return res.status(500).json({ message: 'SERVER ERROR' });
+    }
+
 }
 
 //TODO HANDLE  truncate  REQUEST 
 
 exports.truncateTodo = async function(req , res , next){
-    console.log("hello from truncating todo");
-    return res.send("hello from truncating todo");
+    
+    try {
+        const todo = await Todo.find({});
+        
+        if(!todo) return res.status(404).json({ message: 'no objects found' });
+        
+        //if data found 
+
+        const removeAll = await Todo.remove({});
+
+        res.status(201).json({
+            success : true,
+            deleteInfo : removeAll,
+            dataRemoved : todo 
+        })
+
+    } catch (error) {
+        return res.status(500).json({ message: 'SERVER ERROR' });
+    }
     
 }

@@ -53,8 +53,40 @@ exports.getTodo = async function(req , res , next){
 
 exports.updateTodo = async function(req , res , next){
 
-    console.log("hello from updating todo ");
-    return res.send("hello from update todo");
+    const {id} = req.params;
+    const {description} = req.body;
+
+    if(!id || ! description){
+        return res.status(400).json({ message: 'BAD REQUEST' });
+    }
+
+    try{
+
+        const update = await Todo.updateOne({
+            _id : id 
+        },{$set :{
+            description : description
+        }})
+
+        //if update success 
+        //get the object to send it again to the client
+
+        const todo = await Todo.find({_id  : id});
+
+        //if all ok 
+
+
+        res.status(201).json({
+            success : true,
+            updateStatus : update,
+            data : todo
+        })
+
+    }catch(error){
+        return res.status(500).json({ message: 'SERVER ERROR' });
+    }
+
+
 }
 
 

@@ -12,7 +12,7 @@ router.route("/createTodo").post(createTodo);
 
 //TODO HANDLE  update todo request 
 
-router.route("/updateTodo").put(updateTodo);
+router.route("/updateTodo/:id").put(updateTodo);
 
 //TODO HANDLE  delete request 
 

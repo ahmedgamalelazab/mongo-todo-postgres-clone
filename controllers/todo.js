@@ -1,10 +1,32 @@
 //CRUD operations 
+const Todo = require("../models/todo");
 
 //TODO HANDLE  create todo  REQUEST 
 
 exports.createTodo = async function(req , res , next){
 
-    return res.send("hello from create todo");
+    const {description} = req.body;
+
+    if(!description) return  res.status(400).json({ message: 'BAD REQUEST' });
+
+    //if description added in the form 
+
+    try{
+        
+        const todo = await Todo.create({
+            description : description
+        })
+
+        //if created 
+        res.status(201).json({
+            success : true,
+            data : todo
+        });
+
+    }catch(error){
+        return res.status(500).json({ message: 'SERVER ERROR' });
+    }
+
 
 }
 

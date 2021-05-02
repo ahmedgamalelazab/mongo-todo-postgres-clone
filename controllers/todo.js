@@ -34,9 +34,19 @@ exports.createTodo = async function(req , res , next){
 
 exports.getTodo = async function(req , res , next){
 
-    console.log("hello from get todo ");
-    return res.send("hello from get");
+    try{
 
+        const todo = await Todo.find({});
+        // if all are ok ! 
+        res.status(200).json({
+            success : true,
+            data : todo
+        });
+
+    }catch(error){
+        return res.status(500).json({ message: 'SERVER ERROR' });
+
+    }
 }
 
 //TODO HANDLE  update todo REQUEST 

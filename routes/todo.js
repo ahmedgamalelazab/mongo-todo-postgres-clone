@@ -1,8 +1,7 @@
 const router = require("express").Router();
 const {createTodo , deleteTodo , getTodo , truncateTodo , updateTodo} = require("../controllers/todo");
 
-
-
+ 
 //TODO HANDLE  get todo request 
 
 router.route("/getTodo").get(getTodo);
@@ -17,11 +16,11 @@ router.route("/updateTodo").put(updateTodo);
 
 //TODO HANDLE  delete request 
 
-router.route("deleteTodo/:id").delete(deleteTodo);
+router.route("/deleteTodo/:id").delete(deleteTodo);
 
 //TODO HANDLE  truncate request 
 
-router.route("truncateTodo").delete(truncateTodo);
+router.route("/truncateTodo").delete(truncateTodo);
 
 
 

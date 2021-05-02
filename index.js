@@ -7,6 +7,7 @@ const app = express();
 
 app.use(express.json());
 
+app.use("/app/api/todo/mongo/auth",require("./routes/auth"));
 app.use("/app/api/todo/mongo",require("./routes/todo"));
 
 

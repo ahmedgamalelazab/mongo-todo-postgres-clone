@@ -1,9 +1,10 @@
 // auth will be added here 
+const {User , UserSchema , valid} = require("../models/user");
 
 
 //
 exports.register = async (req , res , next)=>{
-
+    
     res.send("hello from registration request ");
 }
 

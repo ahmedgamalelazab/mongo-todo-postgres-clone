@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
         minLength : 5,
         maxLength : 50,
     },
-    useEmail : {
+    userEmail : {
         required : [true , "Pleas provide a useEmail field"],
         type : mongoose.Schema.Types.String,
         match : [/^(?!.*[\^|+|=|&|}|%|$|#|!|~])(?!^[-])(?!^[_])([a-zA-Z_-]+([0-9]?)+@+[a-zA-z0-9]+\.+com)$/ , "Pleas enter a valid email"],

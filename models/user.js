@@ -38,7 +38,7 @@ const UserSchema = new mongoose.Schema({
 })
 
 //validation schema 
-//this validation will be so usefull when we get the job in the frontEnd side 
+//this validation will be so useful when we get the job in the frontEnd side 
 //on the data base layer we said that we need at max password to be 150 chars but this is not allowed from the uer input so that's why we added joi validation 
 const validUserInput = function(userFormInfo){
     const validSchema = Joi.object({

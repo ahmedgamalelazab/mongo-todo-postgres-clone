@@ -62,6 +62,16 @@ const validUserInput = function(userFormInfo){
     return valid;
 }
 
+const validUserInputLogin  = function(userFormInfo){
+    const validSchema = Joi.object({
+        userEmail : Joi.string().pattern(/^(?!.*[\^|+|=|&|}|%|$|#|!|~])(?!^[-])(?!^[_])([a-zA-Z_-]+([0-9]?)+@+[a-zA-z0-9]+\.+com)$/),
+        userPassword : Joi.string().min(8).max(18).pattern(/(?=.*[*$#@!=])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+/)
+    });
+
+    const valid = validSchema.validate(userFormInfo);
+    return valid;
+}
+
 //middleware crypt userPassword pre save to data bse 
 UserSchema.pre("save",async function(next){
     if(!this.isModified('userPassword')){
@@ -81,5 +91,6 @@ const User = mongoose.model('users',UserSchema);
 module.exports = {
     User : User ,
     UserSchema : UserSchema,
-    valid : validUserInput
+    valid : validUserInput,
+    validLogin : validUserInputLogin
 }

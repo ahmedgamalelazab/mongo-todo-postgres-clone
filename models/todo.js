@@ -1,5 +1,4 @@
 //here will be the model of todo 
-
 const mongoose = require("mongoose");
 
 
@@ -7,7 +6,11 @@ const mongoose = require("mongoose");
 
 
 const TodoSchema = new mongoose.Schema({
-    //id of todo will be set automatically 
+    user_id : {
+        type: mongoose.Schema.Types.ObjectId,
+        required : [true , "user_id missing"],
+        ref : "users"
+    },
     description : {
         type : mongoose.Schema.Types.String,
         minLength : 5,

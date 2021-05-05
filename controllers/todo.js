@@ -6,6 +6,7 @@ const Todo = require("../models/todo");
 exports.createTodo = async function(req , res , next){
 
     const {description} = req.body;
+    const {_id} = req.user;
 
     if(!description) return  res.status(400).json({ message: 'BAD REQUEST' });
 
@@ -14,6 +15,7 @@ exports.createTodo = async function(req , res , next){
     try{
         
         const todo = await Todo.create({
+            user_id : _id,
             description : description
         })
 
@@ -34,9 +36,11 @@ exports.createTodo = async function(req , res , next){
 
 exports.getTodo = async function(req , res , next){
 
+    const {_id} = req.user;
+
     try{
 
-        const todo = await Todo.find({});
+        const todo = await Todo.find({user_id : _id});
         // if all are ok ! 
         res.status(200).json({
             success : true,

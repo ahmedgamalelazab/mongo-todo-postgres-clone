@@ -59,6 +59,8 @@ exports.updateTodo = async function(req , res , next){
 
     const {id} = req.params;
     const {description} = req.body;
+    const {_id} = req.user;
+
 
     if(!id || ! description){
         return res.status(400).json({ message: 'BAD REQUEST' });
@@ -66,8 +68,19 @@ exports.updateTodo = async function(req , res , next){
 
     try{
 
+        const todoo = await Todo.findOne({_id : id});
+        
+        if(!todoo){
+            return res.status(400).json({ message: 'Invalid todo url' });
+        }
+       
+        if(todoo.user_id.toString() !== _id.toString()){
+            return res.status(400).json({ message: 'Not allowed to edit another user data !' });
+        }
+
         const update = await Todo.updateOne({
-            _id : id 
+            _id : id,
+            user_id : _id
         },{$set :{
             description : description
         }})
@@ -101,6 +114,17 @@ exports.deleteTodo = async function(req , res , next){
     //expected to have in the params id 
 
     const {id}= req.params;
+    const {_id} = req.user;
+
+    const todoo = await Todo.findOne({_id : id});
+        
+    if(!todoo){
+        return res.status(400).json({ message: 'Invalid todo url' });
+    }
+   
+    if(todoo.user_id.toString() !== _id.toString()){
+        return res.status(400).json({ message: 'Not allowed to edit another user data !' });
+    }
 
     if(!id){
         return res.status(400).json({ message: 'BAD REQUEST' });
@@ -110,7 +134,7 @@ exports.deleteTodo = async function(req , res , next){
         const todo = await Todo.find({_id : id});
         if(!todo) return res.status(404).json({ message: 'Not found' });
         //if found 
-        const removeOne = await Todo.deleteOne({_id : id});
+        const removeOne = await Todo.deleteOne({_id : id , user_id : _id});
         // if removed 
         res.status(201).json({
             success : true,
@@ -126,15 +150,15 @@ exports.deleteTodo = async function(req , res , next){
 //TODO HANDLE  truncate  REQUEST 
 
 exports.truncateTodo = async function(req , res , next){
-    
+    const {_id} = req.user;
     try {
-        const todo = await Todo.find({});
+        const todo = await Todo.find({user_id : _id});
         
         if(!todo) return res.status(404).json({ message: 'no objects found' });
         
         //if data found 
 
-        const removeAll = await Todo.remove({});
+        const removeAll = await Todo.deleteMany({user_id : _id});
 
         res.status(201).json({
             success : true,

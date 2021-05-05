@@ -5,6 +5,7 @@
 * 3- can edit their own todos 
 * 4- can truncate the whole their own todos 
 * 5- no user allowed to edit another user todos 
-* 6- to gain access on todos service user have to register and verify their accounts 
+* 6- forget and reset password service provided 
+* 7- to gain access on todos service user have to register and verify their accounts 
 
 # this project simply cloned to PSQL todo project with some many other features 

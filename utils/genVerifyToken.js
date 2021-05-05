@@ -4,13 +4,13 @@ const crypto = require("crypto");
 //verify token expires only for moderator when he gonna check for fake users that didn't verify their accounts 
 
 
-const genVerifyTokenPackage =  function(){
+const genVerifyTokenPackage =  function(tokenExpires){
 
     const urlDecodedVerifyToken = crypto.randomBytes(15).toString("hex");
 
     const databaseEncodedVerifyToken = crypto.createHash("sha256").update(urlDecodedVerifyToken).digest("hex");
 
-    const verifyTokenExpires = Date.now() + 25 * (60 * 1000); // 25 minutes of validation 
+    const verifyTokenExpires = Date.now() + tokenExpires * (60 * 1000); // 25 minutes of validation 
 
     return [urlDecodedVerifyToken , databaseEncodedVerifyToken , verifyTokenExpires];
 

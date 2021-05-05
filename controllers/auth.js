@@ -26,7 +26,8 @@ exports.register = async (req , res , next)=>{
          return res.status(400).json({ message: 'this email had registered already !' });
     }
 
-    const [a , b , c ] =  genVerifyToken();
+    //25 mins until user go verify himself 
+    const [a , b , c ] =  genVerifyToken(25);
 
     //create will save automatic with crypt password 
     user = await User.create({
@@ -176,7 +177,58 @@ exports.login = async (req , res , next)=>{
 //
 exports.forgetPassword = async (req , res , next)=>{
 
-    res.send("hello from forget Password request ");
+    //if now web developer handling this service i will refine this code to make it fit the mobile request and verifying user will be by sending a secret to his mobile phone and check for this secret 
+    const {userEmail} = req.body;
+
+    if(!userEmail){
+        return res.status(400).json({ message: 'BAD REQUEST' });
+    }
+
+    try {
+        const user = await User.findOne({userEmail : userEmail});
+
+        if(!user){
+            return res.status(400).json({ message: `this email : ${userEmail} is not registered in the system` });
+        }
+        //a stands for decoded token (urlToken) , b stands for dataBase token , c tokenExpiresInSeconds
+        const [a , b , c ] = genVerifyToken(10);
+
+        user.userResetAccountToken = b;
+        user.userResetAccountTokenExpires = c;
+        await user.save();
+
+        const resetUrl = `http://localhost:3000/app/api/todo/mongo/auth/resetPassword/${a}`;
+
+        const text = `
+        <h1>reset Account Request</h1>
+        <p1>Pleas follow the link to reset password<p1>
+        <a href =${resetUrl}>${resetUrl}</a>
+        `
+
+        try{
+            const info = await sendEmail({
+                to : user.userEmail,
+                subject : `Forget Password request`,
+                text : text
+            });
+
+            //if all ok ,
+            console.log(info);
+
+            return res.json({ success: true,
+                emailInfo : info,
+            });
+        }catch(error){
+            res.status(400).json({success : false , message : "failed to send forgetPassword request email"});
+        }
+
+
+
+    } catch (error) {
+        res.status(500).json({success : false , message : "server Error"});
+    }
+
+   
 }
 
 

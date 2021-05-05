@@ -28,7 +28,7 @@ router.route("/forgetPassword").post(forgetPassword);
 
 //TODO HANDLE  REQUEST
 
-router.route("/resetPassword/:resetToken").put(resetPassword);
+router.route("/resetPassword/:resetToken").get(resetPassword);
 
 
 

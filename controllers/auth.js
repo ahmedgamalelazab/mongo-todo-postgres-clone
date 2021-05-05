@@ -1,8 +1,10 @@
 // auth will be added here 
-const {User , UserSchema , valid} = require("../models/user");
+const {User , validLogin , valid} = require("../models/user");
 const genVerifyToken = require("../utils/genVerifyToken");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
+const userCheck = require("../utils/checkUserLogin");
+const genJWToken = require("../utils/genJswtoken");
 //
 exports.register = async (req , res , next)=>{
     
@@ -127,7 +129,48 @@ exports.verifyUser = async (req , res , next)=>{
 //
 exports.login = async (req , res , next)=>{
 
-    res.send("hello from login request ");
+    const {userEmail , userPassword} = req.body;
+
+    const validInfo = validLogin(req.body);
+
+    if(validInfo.error){
+        return res.status(400).json({ message: 'INPUT NOT VALID' });
+    }
+
+    //check for the user existed in data base or not 
+
+    try{
+        let user = await User.findOne({userEmail : userEmail});
+       
+
+        if(!user){
+            return res.status(400).json({ message: `Invalid userEmail or password` });
+
+        }
+
+        const isMatch = await userCheck(userPassword , user.userPassword);
+
+        if(isMatch){
+            if(user.isVerified){
+                const token = genJWToken(user);
+                return res.json({ success: true,
+                    user : user.userName,
+                    userEmail : user.userEmail,
+                    token : token
+                });
+            }else{
+                return res.status(400).json({ message: 'Pleas verify your account' });
+            }
+        }else{
+            return res.status(400).json({ message: 'Invalid userEmail or password' });
+        }
+
+    }catch(error){
+
+        return res.status(500).json({ message: 'SERVER ERROR'});
+    }
+
+
 }
 
 //

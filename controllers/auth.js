@@ -234,6 +234,51 @@ exports.forgetPassword = async (req , res , next)=>{
 
 //
 exports.resetPassword = async (req , res , next)=>{
+    const decodedVerifyToken = req.params.resetToken;
+    const {userPassword} = req.body;
 
-    res.send("hello from reset password request ");
+
+    if(!decodedVerifyToken || !userPassword){
+        return res.status(400).json({ message: 'BAD REQUEST'});
+    }
+
+    const encodedVerifyToken = crypto.createHash("sha256").update(decodedVerifyToken).digest("hex"); 
+
+    try{    
+
+        let user = await User.findOne({userResetAccountToken : encodedVerifyToken});
+
+        if(!user){
+            return res.status(400).json({ message: 'InvalidToken' });
+        }
+
+        if(user.userResetAccountTokenExpires > Date.now()){
+
+            user.userPassword = userPassword;
+            user.userResetAccountToken = undefined;
+            user.userResetAccountTokenExpires = undefined;
+            await user.save();
+            return res.json({ success: true,
+                passwordReset : "success",
+            });
+
+
+        }else{
+
+            user.userResetAccountToken = undefined;
+            user.userResetAccountTokenExpires = undefined;
+            await user.save();
+            return res.status(400).json({ message: 'Invalid token pleas try again later!'});
+        }
+
+
+
+
+
+    }catch(error){
+       return res.status(500).json({ message: 'server error'});
+    }
+
+
+   
 }

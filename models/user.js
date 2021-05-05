@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
+const cryptPassword = require("../utils/cryptUserPassword");
 /**
  * TODO 
  * USER schema should contain this attributes :
@@ -34,7 +35,17 @@ const UserSchema = new mongoose.Schema({
         match : [/(?=.*[*$#@!=])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+/ , "pleas include in your password capital char , small one and at least one of this chars [*$#@!=]]"],
         minLength : 8,
         maxLength : 150
-    }
+    },
+
+    //extra stuff here means that the user should have extra properties like the ability of saving tokens and validate expires for each token 
+    isVerified : {
+        type : mongoose.Schema.Types.Boolean,
+        default : false,
+    },
+    userVerifyToken : String,
+    userVerifyTokenExpires : Date,
+    userResetAccountToken : String,
+    userResetAccountTokenExpires : Date
 })
 
 //validation schema 
@@ -56,9 +67,8 @@ UserSchema.pre("save",async function(next){
     if(!this.isModified('userPassword')){
         next();
     }
-    //crypt userPassword
-    const salt = await bcrypt.genSalt(10);
-    this.userPassword = await bcrypt.hash(this.userPassword , salt);
+    //crypt the user 
+    this.userPassword = await cryptPassword(this.userPassword);
     next();
 })
 
